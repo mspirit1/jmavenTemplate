@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>prjectId</groupId>
+    <artifactId>testId</artifactId>
+    <version>1.0</version>
+    <!-- Properties -->
+    <properties>
+        <!-- Test name -->
+        <performancetest.script>test.jmx</performancetest.script>
+        <name.test>nameTest</name.test>
+        <dir>${name.test}-${maven.build.timestamp}</dir>
+    </properties>
+    <!--LOAD PROFILES -->
+    <!--profiles>
+        <profile>
+            <id>capacity</id>
+            <properties>
+                <users>100</users>
+                <rampup>1800</rampup>
+                <duration>1800</duration>
+            </properties>
+        </profile>
+        <profile>
+            <id>stable</id>
+            <properties>
+                <users>1</users>
+                <rampup>1</rampup>
+                <duration>60</duration>
+            </properties>
+        </profile>
+    </profiles-->
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.lazerycode.jmeter</groupId>
+                <artifactId>jmeter-maven-plugin</artifactId>
+                <version>2.9.0</version>
+                <executions>
+                    <execution>
+                        <id>jmeter-tests</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>jmeter</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <testFilesIncluded>
+                        <jMeterTestFile>test/${performancetest.script}</jMeterTestFile>
+                    </testFilesIncluded>
+                    <jmeterVersion>5.1.1</jmeterVersion>
+                    <jMeterProcessJVMSettings>
+                        <xms>2024</xms>
+                        <xmx>8192</xmx>
+                        <arguments>
+                            <argument>-XX:MaxMetaspaceSize=256m</argument>
+
+                            <argument>-XX:+UseG1GC</argument>
+                            <argument>-XX:MaxGCPauseMillis=100</argument>
+                            <argument>-XX:G1ReservePercent=20</argument>
+
+                            <argument>-Duser.language=en</argument>
+                            <argument>-Duser.region=EN</argument>
+
+                            <argument>-Dfile.encoding=UTF-8</argument>
+
+                            <argument>-XX:-HeapDumpOnOutOfMemoryError</argument>
+                            <argument>-server</argument>
+
+                        </arguments>
+                    </jMeterProcessJVMSettings>
+                    <!--Jmeter Properties-->
+                    <propertiesJMeter>
+                        <httpclient.reset_state_on_thread_group_iteration>false</httpclient.reset_state_on_thread_group_iteration>
+                    </propertiesJMeter>
+                    <!--User Properties-->
+                    <propertiesUser>
+                        <url>url</url>
+                        <users>${users}</users>
+                        <rampup>${rampup}</rampup>
+                        <duration>${duration}</duration>
+                        <influxIP>influxIP</influxIP>
+                        <testName></testName>
+                    </propertiesUser>
+                    <guiTestFile>${project.basedir}/src/test/jmeter/test/${performancetest.script}</guiTestFile>
+                    <jmeterExtensions>
+                        <artifact>kg.apc:jmeter-plugins-casutg:2.4</artifact>
+                        <artifact>kg.apc:jmeter-plugins-dummy:0.2</artifact>
+                        <artifact>kg.apc:jmeter-plugins-perfmon:2.0</artifact>
+                        <artifact>kg.apc:jmeter-plugins-graphs-additional:2.0</artifact>
+                        <artifact>kg.apc:jmeter-plugins-graphs-basic:2.0</artifact>
+                        <artifact>kg.apc:jmeter-plugins-autostop:0.1</artifact>
+                        <artifact>kg.apc:jmeter-plugins-tst:2.5</artifact>
+                        <artifact>kg.apc:jmeter-plugins-cmn-jmeter:0.6</artifact>
+                        <artifact>kg.apc:jmeter-plugins-standard:1.4.0</artifact>
+                        <artifact>cloud.testload:jmeter.pack-listener:1.4</artifact>
+                        <artifact>com.blazemeter:jmeter-parallel:0.9</artifact>
+                    </jmeterExtensions>
+                    <!-- The plugin uses some broken dependencies. An alternative is to set this to true and use excludedArtifacts, see below  -->
+                    <downloadExtensionDependencies>false</downloadExtensionDependencies>
+                    <resultsDirectory>${project.build.directory}/jmeter/results/</resultsDirectory>
+                    <reportDirectory>${project.build.directory}/jmeter/reports/</reportDirectory>
+                    <generateReports>true</generateReports>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
